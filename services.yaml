@@ -1,13 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: fleetman-webapp
+  name: service-webapp
 spec:
   # filter pods by selector
   # this service becomes a network endpoint for other services and external users to connect to (browser)
   selector:
-    app: fleetman-webapp
-    release: "0-5"
+    app: webapp
 
   ports:
     # name is just documenting that we're expecging http traffice
@@ -25,7 +24,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: fleetman-queue
+  name: service-queue
 spec:
   # filter pods by selector
   # this service becomes a network endpoint for other services and external users to connect to (browser)
