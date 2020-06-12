@@ -1,0 +1,36 @@
+# WHAT DO WE WANT?
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  # must match claimName in mongostack because it will be applied there
+  name: mongo-pvc
+spec:
+  # a label for storage to referece elsewhere
+  storageClassName: my-local-storage
+  accessModes:
+    - ReadWriteOnce
+  # can specify resources to use. Gi means gb wtf
+  resources:
+    requests:
+      storage: 20Gi
+# this claim will search for a persistent volume that matches storage, access modes and classname
+
+---
+
+# HOW DO WE WNT IT IMPLEMENTED?
+# the volume type being abstracted, should not be in the Claim type above, but in a PersistentVolume type
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-storage
+spec:
+  storageClassName: my-local-storage
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    # needs to be at least as much as requested above. above will look for a volume with at least that much
+    storage: 20Gi
+  # hostpath is like a bind mount for local dev pod/mongodb-5c4d7ddcd8-jtvq9
+  hostPath:
+    path: "/mnt/some/directory/structure"
+    type: DirectoryOrCreate
