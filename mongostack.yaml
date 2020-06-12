@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+      - name: mongodb
+        image: mongo:3.6.18-xenial
+        volumeMounts:
+          - name: mongo-persistent-storage
+            mountPath: /data/db
+      volumes:
+      - name: mongo-persistent-storage
+        # hostpath is like a bind mount for local dev pod/mongodb-5c4d7ddcd8-jtvq9
+        hostPath:
+          # this is anywhere on the host machine you want to persist the data
+          path: /mnt/some/directory/structure
+          type: DirectoryOrCreate
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: fleetman-mongodb
+spec:
+  selector:
+    app: mongodb
+  ports:
+  - port: 27017
+  type: ClusterIP
+
