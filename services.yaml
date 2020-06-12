@@ -1,6 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
+  # this name is added to k8s dns
   name: fleetman-webapp
 spec:
   # filter pods by selector
@@ -16,7 +17,7 @@ spec:
       # for live you will instead use type load balancer which can expose any port
       nodePort: 30001
       # targetPort defaults to value of port
-      targetPort: 80
+      # targetPort: 80
 
   type: NodePort
 
@@ -39,3 +40,35 @@ spec:
       # do not need a nodePort because it won't be exposed to outside world
 
   type: NodePort
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fleetman-position-tracker
+spec:
+  selector:
+    app: position-tracker
+
+  ports:
+    - name: http
+      port: 8080
+      # this rest endpoint /vehicles/City Truck should not be exposed to the outside world, so
+      # after resting with a nodePort, remove port and set to ClusterIP
+
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fleetman-api-gateway
+spec:
+  selector:
+    app: api-gateway
+
+  ports:
+    - name: http
+      port: 8080
+
+  type: ClusterIP
